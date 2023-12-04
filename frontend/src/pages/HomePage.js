@@ -22,14 +22,6 @@ const HomePage = () => {
                 {dummyCategories.map((category, idx) => <CategoryCardComponent category={category} idx={idx} />)}
             </Row>
         </Container>
-        <br></br>
-        <br></br>
-        <br></br>
-        <br></br>
-        <br></br>
-        <br></br>
-        <br></br>
-        <br></br>
         </>
         )
     }
