@@ -1,5 +1,9 @@
-const getProducts = (req,res) => {
-    res.send("handling product routes")
-}
+const Product = require("../models/ProductModel")
 
-module.exports = getProducts
+const productController = (req, res) => {
+    Product.create({name: "Panasonic"})
+    res.send("Handling product routes, e.g. search for products")
+}
+module.exports = productController
+
+//controller function imports product model from productmodel.js. interacts with product model to create a new product
