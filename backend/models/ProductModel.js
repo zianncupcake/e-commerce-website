@@ -60,15 +60,15 @@ const productSchema = mongoose.Schema({
 const Product = mongoose.model("Product", productSchema)
 
 //indexes improve speed of queries,
-productSchema.index(
-    {name:"text",description: "text"}, //creates a text idnex on the name and description fields. perform text search operations on these fields efficienctly. 
-    {name: "TextIndex"} //optional name for the index
-)
+// productSchema.index(
+//     {name:"text",description: "text"}, //creates a text idnex on the name and description fields. perform text search operations on these fields efficienctly. 
+//     {name: "TextIndex"} //optional name for the index
+// )
 
-productSchema.index(
-    {"attrs.key":1, "attrs.value":1} // a compound index. requires multiple fields, useful if u frequently query based on attrs.jey and attrs.value combi
-    //1 means ascending
-)
+// productSchema.index(
+//     {"attrs.key":1, "attrs.value":1} // a compound index. requires multiple fields, useful if u frequently query based on attrs.jey and attrs.value combi
+//     //1 means ascending
+// )
 
 module.exports = Product
 
