@@ -1,32 +1,24 @@
-import {Button, Card} from "react-bootstrap";
+import { Card, Button } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 
-const CategoryCardComponent = ({category, idx}) => {
-    const dummyImages = [
-        "/images/tablets-category.png",
-        "/images/monitors-category.png",
-        "/images/games-category.png",
-        "/images/tablets-category.png",
-        "/images/tablets-category.png",
-        "/images/tablets-category.png",
-        "/images/tablets-category.png",
-        "/images/tablets-category.png",
-    ]
+const CategoryCardComponent = ({ category }) => {
+  // basically takes in a prop but doesnt need to render the whole object. just renders the properties required
+  
   return (
     <Card>
-      <Card.Img variant="top" src={dummyImages[idx]} />
+      <Card.Img crossOrigin="anonymous" variant="top" src={category.image ?? null} />
       <Card.Body>
-        <Card.Title>{category}</Card.Title>
+        <Card.Title>{category.name}</Card.Title>
         <Card.Text>
-          Some quick example text to build on the card title and make up the
-          bulk of the card's content.
+          {category.description}
         </Card.Text>
-        <LinkContainer to="/product-list">
-            <Button variant="primary">Go to category</Button>
+        <LinkContainer to={`/product-list/category/${category.name}`}>
+          <Button variant="primary">Go to {category.name}</Button>
         </LinkContainer>
       </Card.Body>
     </Card>
   );
-}
+};
 
 export default CategoryCardComponent;
+

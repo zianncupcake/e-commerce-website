@@ -15,7 +15,7 @@ import AdminChatsPage from "./pages/admin/AdminChatsPage";
 import AdminCreateProductPage from "./pages/admin/AdminCreateProductPage";
 import AdminEditProductPage from "./pages/admin/AdminEditProductPage";
 import AdminEditUserPage from "./pages/admin/AdminEditUserPage";
-import AdminOrdersPage from "./pages/admin/AdminOrders";
+import AdminOrdersPage from "./pages/admin/AdminOrdersPage";
 import AdminOrderDetailsPage from "./pages/admin/AdminOrderDetailsPage";
 import AdminProductsPage from "./pages/admin/AdminProductsPage";
 import AdminUsersPage from "./pages/admin/AdminUsersPage";
@@ -34,27 +34,28 @@ function App() {
           <Route path="/product-details" element={<LoginPage />} />
           <Route path="/product-details/:id" element={<ProductDetailsPage />} />
           <Route path="/product-list" element={<ProductListPage />} />
+          <Route path="/product-list/category/:categoryname" element={<ProductListPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/login" element={<LoginPage />} />
 
          
             <Route path="/user/cart-details" element={<UserCartDetailsPage />} />
-            <Route path="/user/order-details" element={<UserOrderDetailsPage />} />
+            <Route path="/user/order-details/:id" element={<UserOrderDetailsPage />} />
             <Route path="/user/my-orders" element={<UserOrdersPage />} />
             <Route path="/user" element={<UserProfilePage />} />
           </Route>
 
-          <Route element={<ProtectedRoutesComponent admin={true}/>}>
+          {/* <Route element={<ProtectedRoutesComponent admin={true}/>}> */}
             <Route path="/admin/analytics" element={<AdminAnalyticsPage />} />
             <Route path="/admin/chats" element={<AdminChatsPage />} />
             <Route path="/admin/create-new-product" element={<AdminCreateProductPage />} />
-            <Route path="/admin/edit-product" element={<AdminEditProductPage />} />
-            <Route path="/admin/edit-user" element={<AdminEditUserPage />} />
-            <Route path="/admin/order-details" element={<AdminOrdersPage />} />
-            <Route path="/admin/orders" element={<AdminOrderDetailsPage />} />
+            <Route path="/admin/edit-product/:id" element={<AdminEditProductPage />} />
+            <Route path="/admin/edit-user/:id" element={<AdminEditUserPage />} />
+            <Route path="/admin/order-details/:id" element={<AdminOrderDetailsPage />} />
+            <Route path="/admin/orders" element={<AdminOrdersPage />} />
             <Route path="/admin/products" element={<AdminProductsPage />} />
             <Route path="/admin/users" element={<AdminUsersPage />} />
-          </Route>
+          {/* </Route> */}
         
       </Routes>
       <FooterComponent />

@@ -179,13 +179,17 @@ const adminGetProducts = async (req, res, next) => {
 
 const adminDeleteProduct = async (req, res, next) => {
   try {
-    const product = await Product.findById(req.params.id).orFail();
-    await product.remove();
-    res.json({ message: "product removed" });
-  } catch (err) {
-    next(err);
+      const productExists = await Product.findOneAndDelete({_id: req.params.id})
+      if (productExists) {
+          res.json({ productDeleted: true }); // json response sent back to client to indicate category successfully deleted
+      } else {
+          res.status(404).json({ error: 'product not found' });
+      }
+} catch (err) {
+      next(err);
   }
 };
+
 
 const adminCreateProduct = async (req, res, next) => {
   try {
@@ -244,6 +248,7 @@ const adminUpdateProduct = async (req, res, next) => {
 };
 
 const adminUpload = async (req, res, next) => {
+  //a function for validation 
   const imageValidate = (images) => {
     let imagesTable = [];
     if (Array.isArray(images)) {

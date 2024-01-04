@@ -13,8 +13,8 @@ router.get("/search/:searchQuery", getProducts)
 router.get("/getone/:id", getProductById) // details of specfic product
 router.get("/carousel/bestsellers", getBestSellers) //get bestsellers for carousel on homepage. best seller for each cat
 
-router.use(verifyIsLoggedIn) //middleware applied to all routes defined within the router. only affect routes defined after it 
-router.use(verifyIsAdmin)
+//router.use(verifyIsLoggedIn) //middleware applied to all routes defined within the router. only affect routes defined after it 
+//router.use(verifyIsAdmin)
 router.get("/admin", adminGetProducts)
 router.delete("/admin/:id", adminDeleteProduct)
 router.post("/admin", adminCreateProduct)

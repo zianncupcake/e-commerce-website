@@ -13,7 +13,7 @@ const orders = Array.from({length: 22}).map((_, idx) => {
         var subtotal = 100
     }
     return {
-        user:new ObjectId(),
+        user: new ObjectId("625add3d78fb449f9d9fe2ee"),
         orderTotal: {
             itemsCount: 3,
             cartSubtotal: subtotal
@@ -35,3 +35,21 @@ const orders = Array.from({length: 22}).map((_, idx) => {
 })
 
 module.exports = orders
+
+// {
+//     "cartItems": [
+//     {
+//         "name": "Product1 Lenovo Comp1 Name Lorem ipsum dolor sit amet",
+//         "price": 100,
+//         "image": {"path": "/images/tablets-category.png"},
+//         "quantity": 1,
+//         "count": 60
+//     }
+// ],
+// "orderTotal": {
+//     "itemsCount": 1,
+//     "cartSubtotal": 1
+// },
+// "paymentMethod": "PayPal"
+
+// }

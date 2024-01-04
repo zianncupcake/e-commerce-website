@@ -2,8 +2,21 @@
 import {Navbar, Nav, Container, NavDropdown, Badge, Form, Dropdown, DropdownButton, Button, InputGroup} from "react-bootstrap";
 import {LinkContainer} from 'react-router-bootstrap';
 import {Link} from "react-router-dom";
+import axios from "axios";
+import {useAuth} from '../context/UserContext'
+import {useCart} from "../context/CartContext";
+
 
 const HeaderComponent = () => {
+ const handleLogout = () => {
+    // Call the logout function from UserContext
+    logout();
+    // Optionally, you can redirect the user to the login page or perform other actions
+  };  
+  const { user, logout } = useAuth();
+  const { cart } = useCart();
+
+  console.log("user", user);
   return (
     <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
       <Container>
@@ -26,39 +39,42 @@ const HeaderComponent = () => {
             </InputGroup>
             </Nav>
             <Nav>
-            <LinkContainer to ="/admin/orders">
-                <Nav.Link href="#pricing">
-                    Admin
-                    <span className="position-absolute top-1 start-10 translate-middle p-2 bg-danger border border-light rounded-circle"></span>
-                </Nav.Link>
-            </LinkContainer>
-            
-            <NavDropdown title="John Doe" id="collapsible-nav-dropdown">
-              {/* eventKey highlights the current page that we're on  */}
+            {user? (
+              <>
+              
+              <NavDropdown title={`${user.name} ${user.lastName}`} id="collasible-nav-dropdown">
               <NavDropdown.Item eventKey="/user/my-orders" as={Link} to="/user/my-orders">My orders</NavDropdown.Item>
               <NavDropdown.Item eventKey="/user" as={Link} to="/user">My profile</NavDropdown.Item>
-              <NavDropdown.Item>Logout</NavDropdown.Item>
-            </NavDropdown>
-            <LinkContainer to ="/login">
+              <NavDropdown.Item eventKey="/" as={Link} to="/" onClick={() => handleLogout()}>Logout</NavDropdown.Item>
+              </NavDropdown>
+
+              <LinkContainer to ="/cart">
                 <Nav.Link >
-                    Login
-                </Nav.Link>
-            </LinkContainer>
-            <LinkContainer to ="/register">
-                <Nav.Link >
-                    Register
-                </Nav.Link>
-            </LinkContainer>
-            <LinkContainer to ="/cart">
-                <Nav.Link >
-                    <Badge pill bg="danger">2</Badge>
+                    <Badge pill bg="danger">
+                    {cart.length === 0 ? "" : cart.length}
+                    </Badge>
                     <i className="bi bi-cart"></i>
                     {/* ms is marginstart */}
                     <span className="ms-1">Cart</span>
                 </Nav.Link>
             </LinkContainer>
+
+              </>
+            ) : (
+              <>
+                <LinkContainer to="/login">
+                  <Nav.Link>Login</Nav.Link>
+                </LinkContainer>
+                <LinkContainer to="/register">
+                  <Nav.Link>Register</Nav.Link>
+                </LinkContainer>
+              </>
+            )}
+
           </Nav>
           
+
+
         </Navbar.Collapse>
       </Container>
     </Navbar>

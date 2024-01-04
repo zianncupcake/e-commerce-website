@@ -90,8 +90,12 @@ const saveAttr = async (req, res, next) => {
         const existingAttr = categoryExists.attrs.find(item => item.key === key);
 
         if (existingAttr) {
+            if (existingAttr.value.includes(val)) {
+                return res.status(201).json("attribute and corresponding value exists");
+            }
             // Key exists, update its values. push value to existing array
-            existingAttr.value = [...new Set([...existingAttr.value, val])];
+
+            existingAttr.value.push(val)
         } else {
             // Key doesn't exist, add a new attribute. totally new key + associated value
             categoryExists.attrs.push({ key: key, value: [val] });

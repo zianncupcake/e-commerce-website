@@ -9,8 +9,8 @@ const { verifyIsLoggedIn, verifyIsAdmin } = require('../middleware/verifyAuthTok
 
 router.get("/", getCategories) //GET request
 
-router.use(verifyIsLoggedIn)
-router.use(verifyIsAdmin)
+// router.use(verifyIsLoggedIn)
+// router.use(verifyIsAdmin)
 router.post("/", newCategory) //POST request
 
 //makes use of req.params. an object containing properties mapped to the named route parameters. e.g. if a request is made to /categories/games then req.params.category is games

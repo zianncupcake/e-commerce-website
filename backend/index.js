@@ -2,8 +2,9 @@ const express = require("express");
 const fileUpload = require("express-fileupload")
 const cookieParser = require("cookie-parser")
 
+//initialise app
 const app = express();
-const port = 3000;
+const port = 3001;
 
 app.use(express.json()) //allows express to recognise json data that i am sending into it --> this is for post requests
 app.use(fileUpload())
@@ -70,20 +71,39 @@ app.use('/api', apiRoutes)
 
 //error handling middleware functions in this expressjs application
 //logging error. logs error to console
-app.use((error, req, res, next) => {
-  console.error(error);
-  next(error);
-});
+// app.use((error, req, res, next) => {
+//   console.error(error);
+//   next(error);
+// });
 //handling error response sent back to the client. sends json response containing error message
 //500 indicates internal server error
+// app.use((error, req, res, next) => {
+//   res.status(500).json({
+//     message: error.message,
+//     stack: error.stack, //stack trace of error, provides detailed list of function calls and their line numbers, help developers trace origin of error
+//   });
+// });
+
 app.use((error, req, res, next) => {
-  res.status(500).json({
-    message: error.message,
-    stack: error.stack, //stack trace of error, provides detailed list of function calls and their line numbers, help developers trace origin of error
-  });
+  if (process.env.NODE_ENV === "development") {
+    console.error(error);
+  }
+  next(error);
+});
+app.use((error, req, res, next) => {
+  if (process.env.NODE_ENV === "development") {
+    res.status(500).json({
+      message: error.message,
+      stack: error.stack,
+    });
+  } else {
+      res.status(500).json({
+         message: error.message, 
+      })
+  }
 });
 
-//console.log
+//callback function that is gg to be executed once we run the server. basic express server
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
@@ -137,3 +157,6 @@ app.listen(port, () => {
 //     A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
 
 
+//to begin:
+
+// 1. npm init -y command to initialise new nodemon.js project with default package.json file

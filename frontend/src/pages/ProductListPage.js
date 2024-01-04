@@ -1,59 +1,40 @@
-import {
-  Row,
-  Col,
-  Container,
-  ListGroup,
-  Button,
-  Pagination,
-} from "react-bootstrap";
-import SortOptionsComponent from "../components/SortOptionsComponent";
-import PriceFilterComponent from "../components/filterQueryResultOptions/PriceFilterComponent";
-import RatingFilterComponent from "../components/filterQueryResultOptions/RatingFilterComponent";
-import CategoryFilterComponent from "../components/filterQueryResultOptions/CategoryFilterComponent";
-import AttributesFilterComponent from "../components/filterQueryResultOptions/AttributesFilterComponent";
-import ProductForListComponent from "../components/ProductForListComponent";
-import PaginationComponent from "../components/PaginationComponent";
+import ProductListPageComponent from "../components/ProductListPageComponent";
+import axios from "axios";
+import {useEffect, useState} from "react";
 
 const ProductListPage = () => {
-  return (
-    <Container fluid>
-      <Row>
-        <Col md={3}>
-          <ListGroup variant="flush">
-            <ListGroup.Item className="mb-3 mt-3">
-              <SortOptionsComponent />
-            </ListGroup.Item>
-            <ListGroup.Item>
-              <PriceFilterComponent />
-            </ListGroup.Item>
-            <ListGroup.Item>
-              <RatingFilterComponent />
-            </ListGroup.Item>
-            <ListGroup.Item>
-              <CategoryFilterComponent />
-            </ListGroup.Item>
-            <ListGroup.Item>
-              <AttributesFilterComponent />
-            </ListGroup.Item>
-            <ListGroup.Item>
-              <Button variant="primary">Filter</Button>
-              <Button variant="danger">Reset Filter</Button>
-            </ListGroup.Item>
-          </ListGroup>
-        </Col>
-        <Col md={9}>
-          {Array.from({ length: 5 }).map((_, idx) => (
-            <ProductForListComponent
-              key={idx}
-              images={["games", "monitors", "tablets", "games", "monitors"]}
-              idx={idx}
-            />
-          ))}
-          <PaginationComponent />
-        </Col>
-      </Row>
-    </Container>
-  );
+  const [categories, setCategories] = useState(null);
+  const [products, setProducts] = useState(null);
+
+  const getProducts = async () => {
+    const { data } = await axios.get('/api/products');
+    return data
+}
+
+const getCategories = async () => {
+  const { data } = await axios.get("/api/categories/");
+  return data;
+}
+  useEffect(() => {
+    getCategories()
+    .then((res) => {
+        setCategories(res);
+        console.log("res categories", res);        
+    })
+    .catch((er) => console.log(er));
+}, [])
+
+useEffect(() => {
+  getProducts()
+  .then((res) => {
+      setProducts(res.products);
+      console.log("res products", res.products);        
+  })
+  .catch((er) => console.log(er));
+}, [])
+
+  return <ProductListPageComponent products={products} categories={categories} />;
 };
 
 export default ProductListPage;
+

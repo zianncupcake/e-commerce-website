@@ -1,29 +1,30 @@
-import CategoryCardComponent from "../components/CategoryCardComponent";
-import ProductCarouselComponent from "../components/ProductCarouselComponent";
-import {Row, Container} from 'react-bootstrap'
+import HomePageComponent from "../components/HomePageComponent";
+import axios from "axios";
+import {useEffect, useState} from "react";
 
 const HomePage = () => {
-    const dummyCategories = [
-        'Tablets',
-        'Monitors',
-        'Games',
-        'Printers',
-        'Software',
-        'Cameras',
-        'Books',
-        'Videos',
+    const [categories, setCategories] = useState([])
 
-    ]
-    return (
-        <>
-        <ProductCarouselComponent />
-        <Container>
-            <Row xs={1} md={2} className="g-4 mt-5">
-                {dummyCategories.map((category, idx) => <CategoryCardComponent category={category} idx={idx} />)}
-            </Row>
-        </Container>
-        </>
-        )
-    }
+    const getCategories = async () => {
+        const { data } = await axios.get("/api/categories/");
+        return data;
+      }
 
-export default HomePage
+      useEffect(() => {
+        getCategories()
+        .then((res) => {
+            setCategories(res);
+            console.log("res", res);        
+        })
+        .catch((er) => console.log(er));
+    }, [])
+
+      
+
+
+
+  return <HomePageComponent categories={categories} />;
+};
+
+export default HomePage;
+

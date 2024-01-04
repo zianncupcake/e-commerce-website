@@ -1,5 +1,6 @@
 const User = require("../models/UserModel");
-
+const Review = require("../models/ReviewModel");
+const Product = require("../models/ProductModel")
 //bcryptjs library --> commonly used for password hashing in nodejs applications
 const bcrypt = require("bcryptjs");
 //generate salt. 10 represents cost factor / number of rounds of hashing
@@ -25,7 +26,7 @@ const jwt = require("jsonwebtoken");
   };
 
 
-const getUsers = async (req, res, next) => {
+const adminGetUsers = async (req, res, next) => {
   try {
     //retrieves all users using find method. since find is empty{} means no specific conditions
     //exclude password field
@@ -96,7 +97,7 @@ const loginUser = async (req, res, next) => {
         return res.status(400).send("All inputs are required");
       }
   
-      const user = await User.findOne({ email });
+      const user = await User.findOne({ email }).orFail();
       if (user && comparePasswords(password, user.password)) {
 
         //initialise object cookieParams with default cookie settings
@@ -138,7 +139,7 @@ const loginUser = async (req, res, next) => {
   const updateUserProfile = async (req, res, next) => {
     try {
         //if provided in body then change value but if not use the current one 
-      const user = await User.findById(req.user._id).orFail();
+      const user = await User.findById(req.params.id).orFail();
       user.name = req.body.name || user.name;
       user.lastName = req.body.lastName || user.lastName;
       user.email = req.body.email || user.email;
@@ -167,7 +168,121 @@ const loginUser = async (req, res, next) => {
       next(err);
     }
   };
-module.exports = { getUsers, registerUser, loginUser, updateUserProfile};
+
+  const getUserProfile = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.params.id).orFail();
+        return res.send(user);
+    } catch(err) {
+        next(err)
+    }
+}
+
+const writeReview = async (req, res, next) => {
+    try {
+      const {formInputs, user} = req.body;
+        //a new mongodb session starts using startsession method --> group related database operations into a transaction
+        // const session = await Review.startSession();
+        // get comment, rating from request.body:
+        // validate request:
+        if (!(formInputs.comment && formInputs.rating)) {
+            return res.status(400).send("All inputs are required");
+        }
+
+        // create review id manually because it is needed also for saving in Product collection
+        const ObjectId = require("mongodb").ObjectId;
+        const reviewId = new ObjectId();
+        //begin new transaction
+        // session.startTransaction();
+        //session option passed to ensure that the operation is part of the ongoing transaction
+        const reviewCreated = (await Review.create([
+            {
+                _id: reviewId,
+                comment: formInputs.comment,
+                rating: Number(formInputs.rating),
+                user: { id: user._id, name: user.name + " " + user.lastName },
+            }
+        ]))[0]; //use [0] to access first elemt returned by create. mongoose create method returns an array of creat4ed documents
+        //need to populate the reviews because if we never populate, what we store in products.review is only the objectid, so they dont have review field
+        //session option provided to associate the query with the ongoing transaction
+        const product = await Product.findById(req.params.productId).populate("reviews");
+
+        // const alreadyReviewed = product.reviews.find((r) => r.user.id.toString() === req.user._id.toString());
+        // if (alreadyReviewed) {
+        //     await session.abortTransaction();
+        //     session.endSession();
+        //     return res.status(400).send("product already reviewed");
+        // }
+
+        let prc = [...product.reviews];
+        //avoid directly modifying original array
+        //add new item rating into array {{review1},{review2},{rating:rating}}
+        prc.push({ rating: formInputs.rating });
+
+        product.reviews.push(reviewCreated);
+        console.log("review", reviewCreated)
+        console.log("product reviews", product.reviews)
+        if (product.reviews.length === 1) {
+            product.rating = Number(formInputs.rating);
+            product.reviewsNumber = 1;
+        } else {
+            product.reviewsNumber = product.reviews.length;
+            //use reduce function to iterate over product.reviews array, accumulate sum of all individual ratings. 0 is the initial value
+            //thats why we need to add rating object into prc. cuz this rating itself is 1 item, the new review. so need to map rating from each item
+            product.rating = prc.map((item) => Number(item.rating)).reduce((sum, item) => sum + item, 0) / product.reviews.length;
+        }
+        await product.save();
+        // await session.commitTransaction();
+        // session.endSession();
+        res.send('review created')
+    } catch (err) {
+        next(err);
+        console.log(err)   
+    }
+}
+const adminGetUser = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.params.id).select("name lastName email isAdmin").orFail();
+        return res.send(user);
+    } catch (err) {
+       next(err); 
+    }
+}
+
+const adminUpdateUser = async (req, res, next) => {
+    try {
+       const user = await User.findById(req.params.id).orFail(); 
+
+        user.name = req.body.name || user.name;
+        user.lastName = req.body.lastName || user.lastName;
+        user.email = req.body.email || user.email;
+        user.isAdmin = req.body.isAdmin 
+
+        await user.save();
+
+        return res.send({user, message: "user updated"});
+
+    } catch (err) {
+       next(err); 
+    }
+}
+
+const adminDeleteUser = async (req, res, next) => {
+    try {
+        const userExists = await User.findOneAndDelete({_id: req.params.id})
+        console.log("req.params.id", userExists)
+        if (userExists) {
+            res.json({ userDeleted: true }); // json response sent back to client to indicate category successfully deleted
+        } else {
+            res.status(404).json({ error: 'User not found' });
+        }
+} catch (err) {
+        next(err);
+    }
+}
+
+
+module.exports = { adminGetUsers, registerUser, loginUser, updateUserProfile, getUserProfile, writeReview, adminGetUser, adminUpdateUser, adminDeleteUser};
 
 //controller function imports user model from usermodel.js. interacts with user model to create a new user
 //http cookie: small piece of data stored on user's computer by web browser while browsing a website. cookies are designed to be a reliable mechanism for websites to remember stateful info or to record the users browsing activity

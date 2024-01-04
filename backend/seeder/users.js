@@ -1,4 +1,5 @@
 const bcrypt = require("bcrypt")
+const ObjectId = require("mongodb").ObjectId;
 
 const users = [
       {
@@ -9,6 +10,7 @@ const users = [
     isAdmin: true,
   },
   {
+    _id: new ObjectId("625add3d78fb449f9d9fe2ee"),
     name: 'John',
     lastName: 'Doe',
     email: 'john@doe.com',
@@ -17,3 +19,5 @@ const users = [
 ]
 
 module.exports = users
+
+//i dont understand why 1 user got _id and the other dont have but im gg to leave it for now 
